@@ -1,5 +1,6 @@
+import { popAdvertisement } from '@/utils/popAdvertisement';
 import { IconArrowRight } from '@douyinfe/semi-icons';
-import { Select, TextArea } from '@douyinfe/semi-ui';
+import { Button, Select, TextArea } from '@douyinfe/semi-ui';
 import { useState } from 'react';
 export const BasicTranslate = () => {
   const [originLanguage, setOriginLanguage] = useState('English');
@@ -81,6 +82,10 @@ export const BasicTranslate = () => {
               onChange={(e) => setTargetLanguage(e as string)}
               optionList={languages}
             />
+            <Button onClick={() => popAdvertisement()} style={{
+              marginLeft: 16,
+              width: 72
+            }}>翻译</Button>
           </div>
           <TextArea
             value={targetText}

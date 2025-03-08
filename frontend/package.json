@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@douyinfe/semi-icons": "^2.75.0",
+    "@douyinfe/semi-icons-lab": "^2.76.0",
     "@douyinfe/semi-ui": "^2.74.0",
     "@modern-js/runtime": "2.64.1",
     "clsx": "^2.1.1",

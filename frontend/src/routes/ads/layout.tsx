@@ -1,11 +1,9 @@
-import { useUserStore } from '@/stores/userStore';
 import { Badge, Layout, Nav } from '@douyinfe/semi-ui';
 import '@/routes/index.css';
 import { Outlet, useLocation, useNavigate } from '@modern-js/runtime/router';
 import { useMemo } from 'react';
 
 export default () => {
-  const userStore = useUserStore();
   const location = useLocation();
   const nav = useNavigate();
   const navItemKey = useMemo(
@@ -22,14 +20,19 @@ export default () => {
       >
         <Nav selectedKeys={[navItemKey]} style={{ height: '100%' }}>
           <Nav.Item
-            onClick={() => nav('baseInfo')}
-            text="个人信息"
-            itemKey="baseInfo"
+            onClick={() => nav('manage')}
+            text="广告管理"
+            itemKey="manage"
           />
           <Nav.Item
-            onClick={() => nav('unread')}
-            text={`未读消息(${userStore.userInfo.unread})`}
-            itemKey="unread"
+            onClick={() => nav('history')}
+            text="购买历史"
+            itemKey="history"
+          />
+          <Nav.Item
+            onClick={() => nav('new')}
+            text="投放新广告"
+            itemKey="new"
           />
         </Nav>
       </Layout.Sider>

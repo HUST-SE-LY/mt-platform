@@ -5,3 +5,10 @@ export enum UserType {
   Enterprise,
   Admin,
 }
+
+export enum AdsStatusEnum {
+  Normal,
+  Stop,
+  Auditing,
+  Illegal,
+}

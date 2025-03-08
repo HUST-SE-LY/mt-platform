@@ -39,96 +39,93 @@ export default () => {
   return (
     <div>
       <Row>
-        <Col
-          span={11}
-          style={{
-            padding: 16,
-          }}
-        >
-          <Title
+        <Col span={12}>
+          <div
             style={{
-              fontSize: 20,
+              margin: 16,
+              padding: 16,
+              background: 'rgba(0, 0, 0, 0.02)',
+              borderRadius: 24,
             }}
           >
-            文档经提取后的原文
-          </Title>
-          {translateRes.map((el, index) => (
-            <div
-              key={index}
-              onMouseEnter={() => setCurrentHover(index)}
-              onMouseLeave={() => setCurrentHover(-1)}
-              onClick={() => copyText(el.origin)}
+            <Title
+              style={{
+                fontSize: 20,
+              }}
             >
-              <Card
-                className={clsx(
-                  currentHover === index
-                    ? 'semi-card-shadows semi-card-shadows-always'
-                    : ''
-                )}
-                style={{
-                  height: 150,
-                  overflow: 'auto',
-                  marginTop: 8,
-                  transition: 'all 0.5s',
-                }}
+              文档经提取后的原文
+            </Title>
+            {translateRes.map((el, index) => (
+              <div
+                key={index}
+                onMouseEnter={() => setCurrentHover(index)}
+                onMouseLeave={() => setCurrentHover(-1)}
+                onClick={() => copyText(el.origin)}
               >
-                {el.origin}
-              </Card>
-            </div>
-          ))}
+                <Card
+                  className={clsx(
+                    currentHover === index
+                      ? 'semi-card-shadows semi-card-shadows-always'
+                      : 'bold-with-hover'
+                  )}
+                  style={{
+                    height: 150,
+                    overflow: 'auto',
+                    marginTop: 8,
+                    borderRadius: 16,
+                    transition: 'all 0.5s',
+                  }}
+                >
+                  {el.origin}
+                </Card>
+              </div>
+            ))}
+          </div>
         </Col>
-        <Col
-          span={2}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <Divider
+
+        <Col span={12}>
+          <div
             style={{
-              height: '100vh',
-            }}
-            layout="vertical"
-            margin="12px"
-          />
-        </Col>
-        <Col
-          span={11}
-          style={{
-            padding: 16,
-          }}
-        >
-          <Title
-            style={{
-              fontSize: 20,
+              margin: 16,
+              padding: 16,
+              background: 'rgba(0, 0, 0, 0.02)',
+              borderRadius: 24,
             }}
           >
-            对照翻译
-          </Title>
-          {translateRes.map((el, index) => (
-            <div
-              key={index}
-              onMouseEnter={() => setCurrentHover(index)}
-              onMouseLeave={() => setCurrentHover(-1)}
-              onClick={() => copyText(el.target)}
+            <Title
+              style={{
+                fontSize: 20,
+              }}
             >
-              <Card
-                className={clsx(
-                  currentHover === index
-                    ? 'semi-card-shadows semi-card-shadows-always'
-                    : ''
-                )}
-                style={{
-                  height: 150,
-                  overflow: 'auto',
-                  marginTop: 8,
-                  transition: 'all 0.5s',
-                }}
+              对照翻译
+            </Title>
+            {translateRes.map((el, index) => (
+              <div
+                key={index}
+                onMouseEnter={() => setCurrentHover(index)}
+                onMouseLeave={() => setCurrentHover(-1)}
+                onClick={() => copyText(el.target)}
               >
-                {el.target}
-              </Card>
-            </div>
-          ))}
+                <Card
+                  className={clsx(
+                    currentHover === index
+                      ? 'semi-card-shadows semi-card-shadows-always'
+                      : ''
+                  )}
+                  style={{
+                    height: 150,
+                    overflow: 'auto',
+                    marginTop: 8,
+                    transition: 'all 0.5s',
+                    borderRadius: 16,
+                    
+                  }}
+                >
+                  {el.target}
+                </Card>
+              </div>
+            ))}
+          </div>
         </Col>
       </Row>
     </div>

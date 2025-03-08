@@ -29,7 +29,7 @@ export const useUserStore = create<State & Action>()(
       email: 'cheems1969@gmail.com',
       phone: '13965472080',
       enterprise: 'bytedance',
-      userType: UserType.Enterprise,
+      userType: UserType.Advertiser,
       money: 1000,
       unread: 4,
     },
