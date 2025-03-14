@@ -1,0 +1,61 @@
+# 忽略 Python 虚拟环境
+venv/
+env/
+.venv/
+ENV/
+
+# 忽略 Python 编译文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 忽略 Flask 的缓存文件
+instance/
+
+# 忽略 IDE 配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 忽略日志文件
+*.log
+
+# 忽略环境变量文件
+.env
+.env.local
+.env.*.local
+
+# 忽略数据库文件
+*.db
+*.sqlite3
+
+# 忽略静态文件和上传文件
+uploads/
+static/uploads/
+
+# 忽略依赖目录
+node_modules/  # 如果有前端部分
+bower_components/
+
+# 忽略打包文件
+dist/
+build/
+*.egg-info/
+*.egg
+
+# 忽略测试相关文件
+.coverage
+htmlcov/
+.pytest_cache/
+
+# 忽略操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 忽略 Jupyter Notebook 文件
+.ipynb_checkpoints/
+
+# 忽略其他临时文件
+*.tmp
+*.bak
