@@ -38,7 +38,7 @@ export default () => {
         }}
       >
         {
-          needs.map(el => <SingleNeed hideAvatar={true} info={el} path='/market/home/' />)
+          needs.map(el => <SingleNeed showInvite hideAvatar info={el} path='/market/home/' />)
         }
       </div>
     </div>

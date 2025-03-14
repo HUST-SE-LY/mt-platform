@@ -20,24 +20,19 @@ export default () => {
       >
         <Nav selectedKeys={[navItemKey]} style={{ height: '100%' }}>
           <Nav.Item
-            onClick={() => nav('home')}
-            text="翻译市场"
-            itemKey="home"
+            onClick={() => nav('project')}
+            text="我的项目"
+            itemKey="project"
           />
           <Nav.Item
-            onClick={() => nav('history')}
-            text="我的回答"
-            itemKey="history"
+            onClick={() => nav('memory')}
+            text="记忆库管理"
+            itemKey="memory"
           />
           <Nav.Item
-            onClick={() => nav('my')}
-            text="我的需求"
-            itemKey="my"
-          />
-          <Nav.Item
-            onClick={() => nav('new')}
-            text="发布需求"
-            itemKey="new"
+            onClick={() => nav('term')}
+            text="术语库管理"
+            itemKey="term"
           />
         </Nav>
       </Layout.Sider>
