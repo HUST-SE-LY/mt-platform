@@ -1,13 +1,14 @@
 import { UserType } from '@/consts';
 import '@/routes/index.css';
 import { useUserStore } from '@/stores/userStore';
-import { Button, Card, Form } from '@douyinfe/semi-ui';
+import { http } from '@/utils/http';
+import { Button, Card, Form, Toast } from '@douyinfe/semi-ui';
 import { Link, useNavigate } from '@modern-js/runtime/router';
 
 type FormValues = {
   phone: string;
   password: string;
-  type: UserType;
+  userType: UserType;
   enterprise?: string;
 };
 
@@ -16,17 +17,30 @@ export default () => {
   const nav = useNavigate();
   const submit = async (values: FormValues) => {
     console.log(values);
-    userStore.login();
-    userStore.setInfo({
-      name: '刘源',
-      email: 'cheems1969@gmail.com',
-      phone: '13965472080',
-      enterprise: 'bytedance',
-      userType: UserType.Normal,
-      money: 1000,
-      unread: 4,
-    });
-    nav('/');
+    const { phone, password, userType } = values;
+    http
+      .post<any>('/user/login', {
+        phone,
+        password,
+        user_type: userType
+      })
+      .then((res) => {
+        console.log(res)
+        userStore.login();
+        const {balance, company_name, email, phone, unread_message_count, user_type, username} = res;
+        userStore.setInfo({
+          money: balance,
+          enterprise: company_name || '',
+          email: email || '',
+          phone,
+          unread: unread_message_count,
+          userType: user_type,
+          name: username
+        })
+        nav('/')
+      }).catch((err) => {
+        Toast.error('登录失败')
+      });
   };
   return (
     <div>
@@ -68,7 +82,7 @@ export default () => {
                     message: '请选择',
                   },
                 ]}
-                field="type"
+                field="userType"
                 label="用户类型"
               >
                 <Form.Radio value={UserType.Normal}>普通用户</Form.Radio>

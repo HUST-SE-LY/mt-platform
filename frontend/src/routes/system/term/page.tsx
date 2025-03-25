@@ -121,7 +121,7 @@ export default () => {
       <Modal onCancel={() => setShowNew(false)} onOk={createTerm} okText='提交' title="新建术语库" visible={showNew}>
         <Form ref={form}>
           <Form.Input
-            label="记忆库名称"
+            label="术语库名称"
             field="name"
             rules={[
               {

@@ -25,13 +25,13 @@ type Action = {
 export const useUserStore = create<State & Action>()(
   immer((set) => ({
     userInfo: {
-      name: '刘源',
-      email: 'cheems1969@gmail.com',
-      phone: '13965472080',
-      enterprise: 'bytedance',
-      userType: UserType.Pro,
-      money: 1000,
-      unread: 4,
+      name: '',
+      email: '',
+      phone: '',
+      enterprise: '',
+      userType: UserType.Normal,
+      money: 0,
+      unread: 0,
     },
     isLogin: true,
     login: () => {

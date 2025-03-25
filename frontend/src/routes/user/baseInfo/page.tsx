@@ -1,14 +1,97 @@
 import { UserType } from '@/consts';
 import { useUserStore } from '@/stores/userStore';
-import { Button, Form, Switch } from '@douyinfe/semi-ui';
+import { http } from '@/utils/http';
+import { Button, Form, Switch, Toast } from '@douyinfe/semi-ui';
 import Paragraph from '@douyinfe/semi-ui/lib/es/typography/paragraph';
 import Title from '@douyinfe/semi-ui/lib/es/typography/title';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 export default () => {
   const [isEdit, setIsEdit] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
+  const form = useRef<any>();
   const userStore = useUserStore();
+  const freshInfo = () => {
+    http.get<any>('/user/auto_login').then((res) => {
+      console.log(res);
+      userStore.login();
+      const {
+        balance,
+        company_name,
+        email,
+        phone,
+        unread_message_count,
+        user_type,
+        username,
+      } = res;
+      userStore.setInfo({
+        money: balance,
+        enterprise: company_name || '',
+        email: email || '',
+        phone,
+        unread: unread_message_count,
+        userType: user_type,
+        name: username,
+      });
+    });
+  };
+  const changePassword = () => {
+    const { password, secondPassword } = form.current.formApi.getValues();
+    if (!password || !secondPassword || password !== secondPassword) {
+      Toast.error('两次输入的密码不一致');
+      return;
+    }
+    http
+      .post('/user/change_password', {
+        password,
+      })
+      .then(() => {
+        setIsChangePassword(false);
+        Toast.success('修改密码成功');
+      })
+      .catch(() => {
+        Toast.error('修改失败');
+      });
+  };
+  const changeInfo = () => {
+    const { email, name } = form.current.formApi.getValues();
+    http
+      .post('/user/update_profile', {
+        username: name,
+        email,
+      })
+      .then(() => {
+        Toast.success('修改信息成功');
+        setIsEdit(false);
+        freshInfo();
+      })
+      .catch(() => {
+        Toast.error('修改信息失败');
+      });
+  };
+  const charge = (number: number) => {
+    if (!(number > 0)) {
+      Toast.error('请输入合理的充值金额');
+      return;
+    }
+    http
+      .post('/user/recharge', {
+        amount: number,
+      })
+      .then(() => {
+        Toast.success('充值成功');
+        freshInfo();
+      })
+      .catch(() => {
+        Toast.error('充值失败');
+      });
+  };
+  const logout = () => {
+    http.post('/user/logout').then(() => {
+      window.location.reload();
+    });
+  };
+
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -40,6 +123,8 @@ export default () => {
         />
       </div>
       <Form
+        onSubmit={changeInfo}
+        ref={form}
         initValues={userStore.userInfo}
         disabled={!isEdit}
         labelPosition="left"
@@ -55,20 +140,42 @@ export default () => {
               <Form.Input disabled field="enterprise" label="企业名称" />
             )}
             <Form.Input disabled field="money" label="余额" suffix="¥" />
+            <Form.Input required field="name" label="用户名" />
             <Form.Input field="email" label="邮箱" />
             {isChangePassword && (
               <>
-                <Form.Input mode="password" label="新密码" field="password" />
                 <Form.Input
+                  disabled={false}
+                  mode="password"
+                  label="新密码"
+                  field="password"
+                />
+                <Form.Input
+                  disabled={false}
                   mode="password"
                   label="再次输入密码"
                   field="secondPassword"
                 />
+                <Button
+                  onClick={changePassword}
+                  style={{ width: 500, marginTop: 8 }}
+                >
+                  确认修改密码
+                </Button>
               </>
             )}
-            {(isEdit || isChangePassword) && (
-              <Button style={{ width: 500, marginTop: 8 }}>保存</Button>
+            {isEdit && (
+              <Button htmlType="submit" style={{ width: 500, marginTop: 8 }}>
+                保存
+              </Button>
             )}
+            <Button
+              style={{ width: 500, marginTop: 8 }}
+              type="danger"
+              onClick={logout}
+            >
+              退出登录
+            </Button>
           </>
         )}
       </Form>
@@ -81,7 +188,10 @@ export default () => {
       >
         充值
       </p>
-      <Form style={{ width: 900 }}>
+      <Form
+        onSubmit={({ chargeType }) => charge(Number(chargeType))}
+        style={{ width: 900 }}
+      >
         <Form.RadioGroup
           field="chargeType"
           label="选择充值金额"

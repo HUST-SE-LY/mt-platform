@@ -1,41 +1,27 @@
 import { copyText } from '@/utils/copyText';
-import { Card, Col, Divider, Row } from '@douyinfe/semi-ui';
+import { http } from '@/utils/http';
+import { Card, Col, Divider, Row, Toast } from '@douyinfe/semi-ui';
 import Title from '@douyinfe/semi-ui/lib/es/typography/title';
+import { useParams } from '@modern-js/runtime/router';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default () => {
   const [currentHover, setCurrentHover] = useState(-1);
-  const translateRes = [
-    {
-      origin: '心に穴が空きそうだ',
-      target: '心里似乎空了一个洞',
-    },
-    {
-      origin: '今年の夏も壊れそうだ',
-      target: '今年的夏天也像坏掉了一样',
-    },
-    {
-      origin:
-        'どうしようもないことだけ歌いたかった、睡蓮が浮いていた 水圧で透明だ、もう蜃気楼よりも確かならそれでいいよ、このまま何処でもいいからさ、このまま何処でもいいからさ、逃げよう',
-      target:
-        '只是想说些无济于事的话罢了，睡莲漂浮着 因水压而变得透明，如果已经比海市蜃楼更让人有实感的话 就足够了，随便怎么样都好了 目的什么的也无所谓了',
-    },
-    {
-      origin: '心に穴が空きそうだ',
-      target: '心里似乎空了一个洞',
-    },
-    {
-      origin: '今年の夏も壊れそうだ',
-      target: '今年的夏天也像坏掉了一样',
-    },
-    {
-      origin:
-        'どうしようもないことだけ歌いたかった、睡蓮が浮いていた 水圧で透明だ、もう蜃気楼よりも確かならそれでいいよ、このまま何処でもいいからさ、このまま何処でもいいからさ、逃げよう',
-      target:
-        '只是想说些无济于事的话罢了，睡莲漂浮着 因水压而变得透明，如果已经比海市蜃楼更让人有实感的话 就足够了，随便怎么样都好了 目的什么的也无所谓了',
-    },
-  ];
+  const {id} = useParams();
+  const [translateRes, setTranslateRes] = useState<{
+    original_text: string;
+    translated_text: string;
+  }[]>([]);
+  useEffect(() => {
+    http.get<any>(`/document/status/${id}`).then((res) => {
+      if(res.status === 'translating') {
+        Toast.info('文档仍在翻译中，请稍后重试');
+        return ;
+      }
+      setTranslateRes(res.segments);
+    })
+  }, [])
   return (
     <div>
       <Row>
@@ -60,7 +46,7 @@ export default () => {
                 key={index}
                 onMouseEnter={() => setCurrentHover(index)}
                 onMouseLeave={() => setCurrentHover(-1)}
-                onClick={() => copyText(el.origin)}
+                onClick={() => copyText(el.original_text)}
               >
                 <Card
                   className={clsx(
@@ -76,7 +62,7 @@ export default () => {
                     transition: 'all 0.5s',
                   }}
                 >
-                  {el.origin}
+                  <pre>{el.original_text}</pre>
                 </Card>
               </div>
             ))}
@@ -104,7 +90,7 @@ export default () => {
                 key={index}
                 onMouseEnter={() => setCurrentHover(index)}
                 onMouseLeave={() => setCurrentHover(-1)}
-                onClick={() => copyText(el.target)}
+                onClick={() => copyText(el.translated_text)}
               >
                 <Card
                   className={clsx(
@@ -121,7 +107,7 @@ export default () => {
                     
                   }}
                 >
-                  {el.target}
+                  <pre>{el.translated_text}</pre>
                 </Card>
               </div>
             ))}

@@ -1,22 +1,33 @@
+import { http } from '@/utils/http';
 import { popAdvertisement } from '@/utils/popAdvertisement';
 import { IconArrowRight } from '@douyinfe/semi-icons';
-import { Button, Select, TextArea } from '@douyinfe/semi-ui';
+import { Button, Select, TextArea, Toast } from '@douyinfe/semi-ui';
 import { useState } from 'react';
 export const BasicTranslate = () => {
-  const [originLanguage, setOriginLanguage] = useState('English');
-  const [targetLanguage, setTargetLanguage] = useState('Chinese');
+  const [originLanguage, setOriginLanguage] = useState('英文');
+  const [targetLanguage, setTargetLanguage] = useState('中文');
   const [originText, setOriginText] = useState('');
-  const [targetText, setTargetText] = useState('21212121212');
-  const languages = [
-    {
-      label: '英语',
-      value: 'English',
-    },
-    {
-      label: '中文',
-      value: 'Chinese',
-    },
-  ];
+  const [targetText, setTargetText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const languages = ['英文', '中文', '日语'];
+  const translateText = () => {
+    if(isLoading) return;
+    setTargetText('');
+    setIsLoading(true);
+    http.post<{
+      translated_text: string
+    }>('/translation/text', {
+      text: originText,
+      source_lang: originLanguage,
+      target_lang: targetLanguage,
+    }).then((res) => {
+      setTargetText(res.translated_text);
+    }).catch(() => {
+      Toast.error('翻译失败')
+    }).finally(() => {
+      setIsLoading(false);
+    })
+  }
   return (
     <div
       style={{
@@ -52,7 +63,10 @@ export const BasicTranslate = () => {
               style={{
                 width: 280,
               }}
-              optionList={languages}
+              optionList={languages.map((el) => ({
+                label: el,
+                value: el,
+              }))}
             />
           </div>
           <TextArea
@@ -80,23 +94,31 @@ export const BasicTranslate = () => {
               }}
               value={targetLanguage}
               onChange={(e) => setTargetLanguage(e as string)}
-              optionList={languages}
+              optionList={languages.map((el) => ({
+                label: el,
+                value: el,
+              }))}
             />
-            <Button onClick={() => popAdvertisement()} style={{
-              marginLeft: 16,
-              width: 72
-            }}>翻译</Button>
+            <Button
+              onClick={() => {popAdvertisement(); translateText()}}
+              style={{
+                marginLeft: 16,
+                width: 72,
+              }}
+            >
+              翻译
+            </Button>
           </div>
           <TextArea
             value={targetText}
-            placeholder="翻译结果"
-            disabled
+            placeholder={isLoading ? "翻译中" : "翻译结果"}
+            
             style={{
               width: 470,
               height: 200,
               borderRadius: 12,
               fontSize: 18,
-              color: 'gray',
+              color: 'red'
             }}
           />
         </div>

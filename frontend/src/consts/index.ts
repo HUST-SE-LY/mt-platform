@@ -1,16 +1,16 @@
 export enum UserType {
-  Normal,
-  Advertiser,
-  Pro,
-  Enterprise,
-  Admin,
+  Normal = 'Normal',
+  Advertiser = 'Advertiser',
+  Pro = 'Pro',
+  Enterprise = 'Enterprise',
+  Admin = 'Admin',
 }
 
 export enum AdsStatusEnum {
-  Normal,
-  Stop,
-  Auditing,
-  Illegal,
+  Normal = 'active',
+  Stop = 'paused',
+  Auditing = 'under_review',
+  Illegal = 'rejected',
 }
 
 export enum NeedStatus {

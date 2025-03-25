@@ -1,7 +1,10 @@
-import { Badge, Button, ButtonGroup, List } from '@douyinfe/semi-ui';
+import { http } from '@/utils/http';
+import { Badge, Button, ButtonGroup, List, Toast } from '@douyinfe/semi-ui';
 import { Link } from '@modern-js/runtime/router';
+import { useEffect, useState } from 'react';
 
 interface SingleMsg {
+  id: number;
   title: string;
   text: string;
   target?: string;
@@ -10,43 +13,35 @@ interface SingleMsg {
 }
 
 export default () => {
-  const data: SingleMsg[] = [
-    {
-      title: '翻译市场邀请',
-      text: '「用户xxxx」邀请您协助翻译。',
-      target: '/market/114514',
-      isRead: false,
-      date: '2025-02-22',
-    },
-    {
-      title: '翻译市场邀请',
-      text: '「用户xxxx」邀请您协助翻译。',
-      target: '/market/114514',
-      isRead: false,
-      date: '2025-02-22',
-    },
-    {
-      title: '翻译市场邀请',
-      text: '「用户xxxx」邀请您协助翻译。',
-      target: '/market/114514',
-      isRead: false,
-      date: '2025-02-22',
-    },
-    {
-      title: '翻译市场邀请',
-      text: '「用户xxxx」邀请您协助翻译。',
-      target: '/market/114514',
-      isRead: false,
-      date: '2025-02-22',
-    },
-    {
-      title: '翻译市场邀请',
-      text: '「用户xxxx」邀请您协助翻译。',
-      target: '/market/114514',
-      isRead: true,
-      date: '2025-02-22',
-    },
-  ];
+  const [data, setData] = useState<SingleMsg[]>([]);
+  const getMessages = () => {
+    http.get<SingleMsg[]>('/user/messages').then(res => {
+      setData([...res]);
+    })
+  }
+  const readMsg = (id: number) => {
+    http.post('/user/mark_message_as_read', {
+      message_id: id,
+    }).then(() => {
+      Toast.success('已读成功')
+      getMessages();
+    }).catch(() => {
+      Toast.error('已读失败')
+    })
+  }
+  const deleteMsg = (id: number) => {
+    http.post('/user/', {
+      message_id: id
+    }).then(() => {
+      Toast.success('删除成功');
+      getMessages();
+    }).catch(() => {
+      Toast.success('删除失败')
+    })
+  }
+  useEffect(() => {
+    getMessages();
+  }, []);
   return (
     <div>
       <List
@@ -99,8 +94,8 @@ export default () => {
             extra={
               <>
                 <ButtonGroup>
-                  <Button disabled={item.isRead}>已读</Button>
-                  <Button type="danger">删除</Button>
+                  <Button onClick={() => readMsg(item.id)} disabled={item.isRead}>已读</Button>
+                  <Button onClick={() => deleteMsg(item.id)} type="danger">删除</Button>
                 </ButtonGroup>
               </>
             }

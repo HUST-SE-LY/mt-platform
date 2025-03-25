@@ -1,29 +1,32 @@
-import { Button, Table } from '@douyinfe/semi-ui';
+import { http } from '@/utils/http';
+import { Button, Table, Toast } from '@douyinfe/semi-ui';
 import Title from '@douyinfe/semi-ui/lib/es/typography/title';
+import { useEffect, useState } from 'react';
 
 export default () => {
+  const [list, setList] = useState<any[]>([])
   const columns = [
     {
       title: '下单时间',
-      dataIndex: 'time',
+      dataIndex: 'created_at',
     },
     {
       title: '消费金额(元)',
-      dataIndex: 'spent',
+      dataIndex: 'amount',
     },
     {
       title: '投放次数',
-      dataIndex: 'clickTimes'
+      dataIndex: 'click_count'
     },
     {
       title: '目标广告标题',
-      dataIndex: 'title',
+      dataIndex: 'ad_title',
     },
     {
       title: '消费类型',
-      dataIndex: 'type',
+      dataIndex: 'consumption_type',
       render: (type: string) => {
-        return type === 'new' ? '投放新广告' : '广告充值'
+        return type === 'new_ad' ? '投放新广告' : '广告充值'
       }
     },
     {
@@ -31,15 +34,17 @@ export default () => {
       render: () => <Button>开发票</Button>
     }
   ]
-  const data = [
-    {
-      time: '2025-3-12 20:46:11',
-      clickTimes: 10,
-      spent: 20,
-      type: 'new',
-      title: '更好用的聊天软件'
-    }
-  ]
+  const getList = () => {
+    http.get<any>('/ad/consumption_records').then((res) => {
+      setList(res.records)
+    }).catch(() => {
+      Toast.error('获取列表失败');
+    })
+  }
+  useEffect(() => {
+    getList();
+  }, [])
+  
   return (
     <div>
       <Title
@@ -49,7 +54,7 @@ export default () => {
       >
         广告充值/投放记录
       </Title>
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={list} />
     </div>
   );
 };
