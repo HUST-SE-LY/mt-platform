@@ -1,5 +1,6 @@
 from datetime import datetime
 from . import db
+import uuid
 
 class Document(db.Model):
     """文档模型类，用于存储用户上传的文档信息"""
@@ -32,3 +33,21 @@ class Document(db.Model):
             'user_phone': self.user_phone,
             'is_translating': self.is_translating
         }
+
+class ProjectDocument(db.Model):
+    """项目文档表"""
+    __tablename__ = 'project_documents'
+    
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    project_id = db.Column(db.String(36), db.ForeignKey('projects.id'), nullable=False)  # 关联的项目
+    name = db.Column(db.String(100), nullable=False)  # 文档名称
+    file_path = db.Column(db.String(255), nullable=False)  # 文件路径
+    file_size = db.Column(db.Integer, nullable=False)  # 文件大小(KB)
+    status = db.Column(db.String(20), nullable=False, default='pending')  # 状态：pending/translating/completed
+    created_at = db.Column(db.DateTime, default=datetime.now)  # 创建时间
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)  # 更新时间
+    user_id = db.Column(db.String(20), db.ForeignKey('users.phone'), nullable=True)  # 创建者
+    
+    # 关联关系
+    project = db.relationship('Project', backref=db.backref('documents', lazy=True))
+    creator = db.relationship('User', backref=db.backref('documents', lazy=True))

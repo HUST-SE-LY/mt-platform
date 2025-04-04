@@ -94,12 +94,12 @@ export class Http {
     return await this.parseFetch<T>(
       await fetch(
         this.concatUrl(path),
-        this.mergeOptions("POST", data, {
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options?.headers
-            }
+        this.mergeOptions('POST', data, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers,
+          },
         })
       )
     );
@@ -112,11 +112,11 @@ export class Http {
   ) {
     return await fetch(
       this.concatUrl(path),
-      this.mergeOptions("POST", data, {
-          ...options,
-          headers: {
-              ...options?.headers
-          }
+      this.mergeOptions('POST', data, {
+        ...options,
+        headers: {
+          ...options?.headers,
+        },
       })
     );
   }
@@ -168,6 +168,10 @@ export class Http {
         this.mergeOptions('DELETE', data, options)
       )
     );
+  }
+
+  getBaseUrl(): string {
+    return `${this.apiEndpoint}${this.prefix}`;
   }
 }
 

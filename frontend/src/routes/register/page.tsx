@@ -16,22 +16,22 @@ export default () => {
         phone: values.phone,
         email: values.email,
         user_type: values.userType,
-        company_name: values.companyName
+        company_code: values.companyCode,
       });
 
       console.log(response);
 
       // 注册成功处理
-        Toast.success({
-          content: '注册成功',
-          duration: 3
-        });
-        nav('/login');
+      Toast.success({
+        content: '注册成功',
+        duration: 3,
+      });
+      nav('/login');
     } catch (error: any) {
       // 错误处理
       Toast.error({
         content: error.message || '注册失败',
-        duration: 3
+        duration: 3,
       });
     }
   };
@@ -111,15 +111,20 @@ export default () => {
                   rules={[
                     {
                       required: true,
-                      message: '请输入必填项',
+                      message: '请输入公司代码',
+                    },
+                    {
+                      pattern: /^\d{6}$/,
+                      message: '公司代码必须是6位数字',
                     },
                   ]}
-                  field="companyName"
-                  label="企业名称"
+                  field="companyCode"
+                  label="公司代码"
+                  placeholder="请输入6位数字的公司代码"
                 />
               )}
               <Button
-                htmlType='submit'
+                htmlType="submit"
                 style={{
                   width: '100%',
                 }}
@@ -134,9 +139,11 @@ export default () => {
             marginTop: 12,
             display: 'flex',
             flexDirection: 'row-reverse',
+            gap: 12,
           }}
         >
           <Link to="/login">已有账号？点击登录</Link>
+          <Link to="/company-register">注册公司账号</Link>
         </div>
       </Card>
     </div>

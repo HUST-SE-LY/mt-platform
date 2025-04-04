@@ -25,15 +25,11 @@ USER_TYPE_MAPPING = {
 class User(db.Model):
     __tablename__ = 'users'
     
-    # 主键
     phone = db.Column(db.String(20), primary_key=True)
-    
-    # 必填字段
     username = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(128), nullable=False)
     balance = db.Column(db.Float, nullable=False, default=0.0)
     
-    # 将 unread_message_count 改为计算字段
     unread_message_count = column_property(
         select(func.count(Message.id))
         .where(Message.user_phone == phone)
@@ -41,11 +37,10 @@ class User(db.Model):
         .scalar_subquery()
     )
     
-    # 选填字段
     email = db.Column(db.String(120), nullable=True)
-    company_name = db.Column(db.String(120), nullable=True)
+    company_id = db.Column(db.String(36), db.ForeignKey('companies.id'), nullable=True)  # 新增公司关联
+    company = db.relationship('Company', backref='users')  # 新增关系
     
-    # 用户类型
     user_type = db.Column(Enum(UserType), nullable=False, default=UserType.Normal)
     
     @classmethod

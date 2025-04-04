@@ -1,36 +1,73 @@
-import { Button, Card } from '@douyinfe/semi-ui';
+import { Button, Card, Toast } from '@douyinfe/semi-ui';
 import { NewProject } from './components/NewProject';
 import { useEffect, useState } from 'react';
 import { useNavigate } from '@modern-js/runtime/router';
+import { http } from '@/utils/http';
 
 interface Project {
-  id: number;
+  id: string;
   name: string;
-  docNum: number;
+  source_lang: string;
+  target_lang: string;
+  doc_count: number;
+  created_at: string;
+  description?: string;
 }
 
+// 语言选项映射
+const languageMap: Record<string, string> = {
+  zh: '中文',
+  en: '英文',
+  ja: '日文',
+  ko: '韩文',
+  fr: '法文',
+  de: '德文',
+  es: '西班牙文',
+  ru: '俄文',
+};
+
 export default () => {
-  const [project, setProject] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(false);
   const nav = useNavigate();
+
+  // 获取项目列表
+  const fetchProjects = async () => {
+    setLoading(true);
+    try {
+      const response = await http.get<Project[]>('/project');
+      setProjects(response || []);
+    } catch (error: any) {
+      Toast.error({
+        content: error.message || '获取项目列表失败',
+        duration: 3,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 删除项目
+  const handleDelete = async (id: string) => {
+    try {
+      await http.delete(`/project/${id}`);
+      Toast.success({
+        content: '删除成功',
+        duration: 3,
+      });
+      fetchProjects();
+    } catch (error: any) {
+      Toast.error({
+        content: error.message || '删除失败',
+        duration: 3,
+      });
+    }
+  };
+
   useEffect(() => {
-    setProject([
-      {
-        id: 1,
-        name: '项目1',
-        docNum: 2,
-      },
-      {
-        id: 2,
-        name: '项目2',
-        docNum: 1,
-      },
-      {
-        id: 3,
-        name: '项目3',
-        docNum: 3,
-      },
-    ]);
-  });
+    fetchProjects();
+  }, []);
+
   return (
     <div
       style={{
@@ -39,53 +76,77 @@ export default () => {
         flexWrap: 'wrap',
       }}
     >
-      <NewProject />
-      {project.map((el) => (
+      <NewProject onSuccess={fetchProjects} />
+      {projects.map((project) => (
         <Card
+          key={project.id}
           shadows="hover"
+          loading={loading}
           style={{
-            width: 250,
-            height: 175,
+            width: 300,
             borderRadius: 12,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             flexDirection: 'column',
-            gap: 16,
+            padding: 24,
+            height: 240,
+            gap: 8,
           }}
         >
-          <p
+          <h3
             style={{
               fontSize: 18,
               fontWeight: 'bold',
-              textAlign: 'center',
               marginBottom: 16,
+              textAlign: 'center',
             }}
           >
-            {el.name}
-          </p>
-          <p style={{
-              textAlign: 'center',
+            {project.name}
+          </h3>
+          <div
+            style={{
               marginBottom: 16,
-            }}>文档数：{el.docNum}</p>
+              display: 'flex',
+              gap: 8,
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+              textAlign: 'center',
+            }}
+          >
+            <p>
+              源语言：{languageMap[project.source_lang] || project.source_lang}
+            </p>
+            <p>
+              目标语言：
+              {languageMap[project.target_lang] || project.target_lang}
+            </p>
+            <p>文档数：{project.doc_count}</p>
+            {project.description && (
+              <p style={{ color: 'var(--semi-color-text-2)' }}>
+                备注：{project.description}
+              </p>
+            )}
+          </div>
           <div>
             <Button
-              onClick={() => nav(`${el.id}`)}
+              onClick={() => nav(`${project.id}`)}
               style={{
-                marginLeft: 16,
                 borderRadius: 999,
-                width: 72
+                width: 72,
               }}
             >
               查看
             </Button>
             <Button
-              type='danger'
+              type="danger"
               style={{
                 marginLeft: 16,
                 borderRadius: 999,
-                width: 72
+                width: 72,
               }}
+              onClick={() => handleDelete(project.id)}
             >
               删除
             </Button>

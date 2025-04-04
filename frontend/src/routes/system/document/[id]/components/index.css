@@ -1,0 +1,37 @@
+.segment-source {
+  line-height: 1.6;
+}
+
+.highlighted-term {
+  background-color: rgba(255, 199, 0, 0.3);
+  border-bottom: 1px solid var(--semi-color-warning);
+  padding: 0 2px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.highlighted-term:hover {
+  background-color: rgba(255, 199, 0, 0.5);
+  border-bottom-color: var(--semi-color-warning-active);
+}
+
+/* Tooltip 样式 */
+.term-tooltip-content {
+  padding: 4px 0;
+}
+
+.term-tooltip-row {
+  color: white;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 4px 0;
+}
+
+.term-tooltip-row.clickable {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.term-tooltip-row.clickable:hover {
+  color: var(--semi-color-primary);
+}

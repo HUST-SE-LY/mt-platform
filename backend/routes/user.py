@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify
 from flask import make_response
 from passlib.hash import pbkdf2_sha256
-from models import db, User
+from models import db, User, Company  # 添加 Company 导入
 from models.user import USER_TYPE_MAPPING, UserType  # 添加 UserType 导入
 from flask import current_app
 from models.document import Document
 import time
+import re
 
 user_bp = Blueprint('user', __name__, url_prefix='/api/user')
 
@@ -19,19 +20,37 @@ def register():
     phone = data.get('phone')
     email = data.get('email', None)
     user_type = data.get('user_type')
-    company_name = data.get('company_name', None)
+    company_code = data.get('company_code', None)  # 修改这里，从company_name改为company_code
 
     # 验证用户类型
     if user_type not in USER_TYPE_MAPPING:
         return jsonify({'error': 'Invalid user type'}), 400
     
     # 检查必填字段
-    if not username or not password or not phone or user_type is None:  # 修改这里
+    if not username or not password or not phone or user_type is None:
         return jsonify({'error': 'Missing required fields'}), 400
     
     # 检查用户是否已存在
     if User.query.filter_by(phone=phone).first():
         return jsonify({'error': 'User already exists'}), 400
+    
+    # 如果是企业用户或广告客户，需要验证公司代码
+    if USER_TYPE_MAPPING[user_type] in [UserType.Enterprise, UserType.Advertiser]:
+        if not company_code:
+            return jsonify({'error': '企业用户或广告客户必须提供公司代码'}), 400
+        
+        # 验证公司代码格式
+        if not re.match(r'^\d{6}$', company_code):
+            return jsonify({'error': '公司代码必须是6位数字'}), 400
+        
+        # 检查公司是否存在
+        company = Company.query.filter_by(org_code=company_code).first()
+        if not company:
+            return jsonify({'error': '公司代码不存在，请先注册公司'}), 400
+        
+        company_id = company.id
+    else:
+        company_id = None
     
     # 创建新用户
     new_user = User(
@@ -39,9 +58,8 @@ def register():
         username=username,
         password=pbkdf2_sha256.hash(password),
         balance=0.0,
-        unread_message_count=0,
         email=email,
-        company_name=company_name,
+        company_id=company_id,  # 使用公司ID而不是公司名称
         user_type=USER_TYPE_MAPPING[user_type]
     )
     
@@ -79,6 +97,13 @@ def login():
         if not pbkdf2_sha256.verify(password, user.password):
             return jsonify({'error': 'Invalid phone or password'}), 401
 
+    # 获取公司名称（如果有关联公司）
+    company_name = None
+    if user.company_id:
+        company = Company.query.get(user.company_id)
+        if company:
+            company_name = company.name
+
     # 创建响应
     response = make_response(jsonify({
         'phone': user.phone,
@@ -86,7 +111,7 @@ def login():
         'balance': user.balance,
         'unread_message_count': user.unread_message_count,
         'email': user.email,
-        'company_name': user.company_name,
+        'company_name': company_name,  # 使用从公司表中获取的名称
         'user_type': user.user_type.name
     }))
 
@@ -105,6 +130,13 @@ def auto_login():
     # 中间件已经验证了cookie并将用户信息附加到request对象
     user = request.user
     
+    # 获取公司名称（如果有关联公司）
+    company_name = None
+    if user.company_id:
+        company = Company.query.get(user.company_id)
+        if company:
+            company_name = company.name
+    
     # 返回用户信息
     return jsonify({
         'phone': user.phone,
@@ -112,7 +144,7 @@ def auto_login():
         'balance': user.balance,
         'unread_message_count': user.unread_message_count,
         'email': user.email,
-        'company_name': user.company_name,
+        'company_name': company_name,  # 使用从公司表中获取的名称
         'user_type': user.user_type.name
     }), 200
 

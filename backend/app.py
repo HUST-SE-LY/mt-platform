@@ -13,6 +13,9 @@ from services.translation import DeepSeekTranslator
 from routes.document import document_bp
 from routes.advertisement import ad_bp
 from routes.translation_memory import translation_memory_bp
+from routes.company import company
+from routes.termbase import termbase_bp
+from routes.project import project_bp
 
 # 加载环境变量
 load_dotenv()
@@ -63,6 +66,9 @@ app.register_blueprint(translation_bp)
 app.register_blueprint(document_bp)
 app.register_blueprint(ad_bp)
 app.register_blueprint(translation_memory_bp)
+app.register_blueprint(company)
+app.register_blueprint(termbase_bp)
+app.register_blueprint(project_bp)
 
 if __name__ == '__main__':
     app.run(port=5050, debug=True)

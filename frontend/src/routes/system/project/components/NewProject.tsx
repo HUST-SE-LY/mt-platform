@@ -1,27 +1,40 @@
+import { Card } from '@douyinfe/semi-ui';
 import { IconPlus } from '@douyinfe/semi-icons';
-import { Button } from '@douyinfe/semi-ui';
 import { useNavigate } from '@modern-js/runtime/router';
 
-export const NewProject = () => {
+interface Props {
+  onSuccess?: () => void;
+}
+
+export const NewProject = ({ onSuccess }: Props) => {
   const nav = useNavigate();
+
   return (
-    <div
+    <Card
+      shadows="hover"
       style={{
-        width: 250,
-        height: 175,
+        width: 300,
+        height: 240,
         borderRadius: 12,
-        border: '1px solid rgba(0, 0, 0, 0.1)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 8
+        cursor: 'pointer',
+        border: '1px dashed var(--semi-color-border)',
       }}
+      onClick={() => nav('new')}
     >
-      <Button onClick={() => nav('new')} icon={<IconPlus />} style={
-        {
-          borderRadius: 999
-        }
-      } >新建项目</Button>
-    </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
+        <IconPlus size="large" />
+        <span>新建项目</span>
+      </div>
+    </Card>
   );
 };
